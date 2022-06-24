@@ -53,13 +53,12 @@ void binaryOpTensor(const Tensor& self, const Tensor& other, const Scalar& alpha
           MPSGraphTensor* primaryCastTensor   = newCachedGraph->primaryTensor;
           MPSGraphTensor* secondaryCastTensor = newCachedGraph->secondaryTensor;
 
-          // this type inference is only required at the time of graph creation
-          const ScalarType common_dtype = c10::promoteTypes(self.scalar_type(), other.scalar_type());
-          if (self.scalar_type() != common_dtype) {
-            primaryCastTensor = castMPSTensor(mpsGraph, newCachedGraph->primaryTensor, common_dtype);
+          const ScalarType output_dtype = output.scalar_type();
+          if (self.scalar_type() != output_dtype) {
+            primaryCastTensor = castMPSTensor(mpsGraph, newCachedGraph->primaryTensor, output_dtype);
           }
-          if (other.scalar_type() != common_dtype) {
-            secondaryCastTensor = castMPSTensor(mpsGraph, newCachedGraph->secondaryTensor, common_dtype);
+          if (other.scalar_type() != output_dtype) {
+            secondaryCastTensor = castMPSTensor(mpsGraph, newCachedGraph->secondaryTensor, output_dtype);
           }
           newCachedGraph->outputTensor = binaryBlock(newCachedGraph, primaryCastTensor, secondaryCastTensor);
         }
